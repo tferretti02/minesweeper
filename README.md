@@ -4,7 +4,7 @@ This is a simple Minesweeper game built using the R Shiny web framework. The gam
 
 ## Installation
 
-Before running the game, you need to make sure that you have the shiny and reticulate packages installed in R. You also need to have Python installed on your system, as the game uses the Python random module to generate the mine locations.
+Before running the game, you need to make sure that you have the shiny and reticulate packages installed in R. You also need to have Python and the pygame package installed on your system, as the game uses the pygame library to handle graphics.
 
 You can install the required packages using the following R commands:
 
@@ -13,7 +13,13 @@ install.packages("shiny")
 install.packages("reticulate")
 ```
 
-You can download and install Python from the official website: (https://www.python.org/downloads/)
+You can download and install Python from the official website: https://www.python.org/downloads/
+
+To install pygame, open a command prompt or terminal window and run the following command:
+
+```bash
+pip install pygame
+```
 
 ## Running the Game
 
