@@ -79,10 +79,6 @@ screen.blit(grid_surface, (0, (height - grid_height) // 2))
 # Update the display
 pygame.display.update()
 
-# Run the game loop
-revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
-game_over = False
-
 
 def reveal_square(i, j):
     # Reveal the square at (i, j)
@@ -118,6 +114,18 @@ def reveal_square(i, j):
         grid_surface.blit(text_surface, text_rect)
 
 
+# Initialize the timer
+timer = 0
+
+# Set up the font for the timer text
+timer_font = pygame.font.Font(None, 18)
+
+# Create a text surface for the timer
+timer_text = timer_font.render("Time: " + str(timer), True, WHITE)
+
+# Run the game loop
+revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
+game_over = False
 while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -155,10 +163,24 @@ while not game_over:
                     if not flagged[i][j]:
                         # Reveal the square and its neighbors
                         reveal_square(i, j)
+
+    # Increment the timer
+    timer += pygame.time.get_ticks() / 1000
+
+    # Set up the font for the timer text
+    timer_font = pygame.font.Font(None, 30)
+
+    # Create a text surface for the updated timer value
+    timer_text = timer_font.render("Time: " + str(int(timer)), True, WHITE)
+
     # Blit the grid surface to the screen
     screen.fill(BLACK)
     screen.blit(grid_surface, ((width - grid_width) //
                 2, (height - grid_height) // 2))
+
+    # Blit the timer text onto the game screen
+    screen.blit(timer_text, (grid_padding, grid_padding))
+
     # Update the display
     pygame.display.update()
 
