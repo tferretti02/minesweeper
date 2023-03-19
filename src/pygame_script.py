@@ -6,10 +6,12 @@ pygame.init()
 
 # Define some colors
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 GRAY = (128, 128, 128)
 WHITE = (255, 255, 255)
+ORANGE = (255, 165, 0)
+RED = (255, 0, 0)
+
 
 # Set up the grid
 num_rows = 8
@@ -18,8 +20,8 @@ square_size = 30
 grid_padding = 5
 
 # Set up the screen
-width = num_cols*40
-height = num_rows*40
+width = num_cols*(square_size+grid_padding)
+height = num_rows*(square_size+grid_padding)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Color-changing Grid")
 
@@ -86,8 +88,8 @@ def reveal_square(i, j):
     x = j * (square_size + grid_padding) + grid_padding
     y = i * (square_size + grid_padding) + grid_padding
     if matrix[i][j] == -1:
-        # Draw a red square for a mine
-        pygame.draw.rect(grid_surface, RED, pygame.Rect(
+        # Draw an orange square for a mine
+        pygame.draw.rect(grid_surface, ORANGE, pygame.Rect(
             x, y, square_size, square_size))
         # Game over
         global game_over
@@ -97,11 +99,10 @@ def reveal_square(i, j):
         pygame.draw.rect(grid_surface, WHITE, pygame.Rect(
             x, y, square_size, square_size))
         # Reveal neighboring squares
-        for x in range(max(0, i - 1), min(num_rows, i + 2)):
-            for y in range(max(0, j - 1), min(num_cols, j + 2)):
-                if not revealed[x][y]:
-                    # Recursively reveal neighboring squares
-                    reveal_square(x, y)
+        for (x, y) in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+            if (0 <= x < num_rows) and (0 <= y < num_cols) and not revealed[x][y]:
+                # Recursively reveal neighboring squares
+                reveal_square(x, y)
     else:
         # Draw a green square for a number
         pygame.draw.rect(grid_surface, GREEN, pygame.Rect(
@@ -126,8 +127,16 @@ while not game_over:
             j = (pos[0] - grid_padding) // (square_size + grid_padding)
             # Check if the square has already been revealed
             if not revealed[i][j]:
-                # Reveal the square and its neighbors
-                reveal_square(i, j)
+                # Check if the right mouse button was clicked
+                if event.button == 3:
+                    # Draw a red square for a flag
+                    x = j * (square_size + grid_padding) + grid_padding
+                    y = i * (square_size + grid_padding) + grid_padding
+                    pygame.draw.rect(grid_surface, RED, pygame.Rect(
+                        x, y, square_size, square_size))
+                else:
+                    # Reveal the square and its neighbors
+                    reveal_square(i, j)
 
     # Blit the grid surface to the screen
     screen.blit(grid_surface, (0, (height - grid_height) // 2))
