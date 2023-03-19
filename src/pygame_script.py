@@ -20,8 +20,8 @@ square_size = 30
 grid_padding = 5
 
 # Set up the screen
-width = num_cols*(square_size+grid_padding)
-height = num_rows*(square_size+grid_padding)
+width = num_cols * (square_size + grid_padding)
+height = num_rows * (square_size + grid_padding)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Color-changing Grid")
 
@@ -61,6 +61,9 @@ font = pygame.font.Font(None, 18)
 # Create the grid surface
 grid_surface = pygame.Surface((grid_width, grid_height))
 grid_surface.fill(BLACK)
+
+# Create the flagged matrix
+flagged = [[False for j in range(num_cols)] for i in range(num_rows)]
 
 # Draw the gray squares
 for i in range(num_rows):
@@ -129,11 +132,23 @@ while not game_over:
             if not revealed[i][j]:
                 # Check if the right mouse button was clicked
                 if event.button == 3:
-                    # Draw a red square for a flag
-                    x = j * (square_size + grid_padding) + grid_padding
-                    y = i * (square_size + grid_padding) + grid_padding
-                    pygame.draw.rect(grid_surface, RED, pygame.Rect(
-                        x, y, square_size, square_size))
+                    # Check if the square is already flagged
+                    if flagged[i][j]:
+                        # Remove the flag
+                        flagged[i][j] = False
+                        # Draw a gray square
+                        x = j * (square_size + grid_padding) + grid_padding
+                        y = i * (square_size + grid_padding) + grid_padding
+                        pygame.draw.rect(grid_surface, GRAY, pygame.Rect(
+                            x, y, square_size, square_size))
+                    else:
+                        # Draw a red square for a flag
+                        x = j * (square_size + grid_padding) + grid_padding
+                        y = i * (square_size + grid_padding) + grid_padding
+                        pygame.draw.rect(grid_surface, RED, pygame.Rect(
+                            x, y, square_size, square_size))
+                        # Flag the square
+                        flagged[i][j] = True
                 else:
                     # Reveal the square and its neighbors
                     reveal_square(i, j)
