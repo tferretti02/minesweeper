@@ -165,13 +165,21 @@ while not game_over:
                         reveal_square(i, j)
 
     # Increment the timer
-    timer = pygame.time.get_ticks() / 1000
+    timer = pygame.time.get_ticks()
+
+    # change milliseconds into minutes, seconds
+    counting_minutes = str(timer//60000).zfill(2)
+    counting_seconds = str((timer % 60000)//1000).zfill(2)
+
+    counting_string = "%s:%s" % (
+        counting_minutes, counting_seconds)
 
     # Set up the font for the timer text
     timer_font = pygame.font.Font(None, 30)
 
     # Create a text surface for the updated timer value
-    timer_text = timer_font.render("Time: " + str(int(timer)), True, WHITE)
+    timer_text = timer_font.render(
+        "Time: " + str(counting_string), True, WHITE)
 
     # Blit the grid surface to the screen
     screen.fill(BLACK)
