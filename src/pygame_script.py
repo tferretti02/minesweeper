@@ -21,13 +21,13 @@ grid_padding = 5
 
 # Set up the screen
 width = num_cols * (square_size + grid_padding) + grid_padding
-height = num_rows * (square_size + grid_padding) + grid_padding
+height = num_rows * (square_size + grid_padding) + grid_padding + 40
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Color-changing Grid")
 
 # Calculate the size of the grid surface
 grid_width = width
-grid_height = height
+grid_height = height - 40
 
 # Create the matrix
 matrix = [[0 for j in range(num_cols)] for i in range(num_rows)]
@@ -165,7 +165,7 @@ while not game_over:
                         reveal_square(i, j)
 
     # Increment the timer
-    timer += pygame.time.get_ticks() / 1000
+    timer = pygame.time.get_ticks() / 1000
 
     # Set up the font for the timer text
     timer_font = pygame.font.Font(None, 30)
