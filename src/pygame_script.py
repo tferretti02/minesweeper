@@ -20,14 +20,14 @@ square_size = 30
 grid_padding = 5
 
 # Set up the screen
-width = num_cols * (square_size + grid_padding)
-height = num_rows * (square_size + grid_padding)
+width = num_cols * (square_size + grid_padding) + grid_padding
+height = num_rows * (square_size + grid_padding) + grid_padding
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Color-changing Grid")
 
 # Calculate the size of the grid surface
-grid_width = num_cols * (square_size + grid_padding) + grid_padding
-grid_height = num_rows * (square_size + grid_padding) + grid_padding
+grid_width = width
+grid_height = height
 
 # Create the matrix
 matrix = [[0 for j in range(num_cols)] for i in range(num_rows)]
@@ -102,10 +102,11 @@ def reveal_square(i, j):
         pygame.draw.rect(grid_surface, WHITE, pygame.Rect(
             x, y, square_size, square_size))
         # Reveal neighboring squares
-        for (x, y) in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
-            if (0 <= x < num_rows) and (0 <= y < num_cols) and not revealed[x][y]:
-                # Recursively reveal neighboring squares
-                reveal_square(x, y)
+        for x in range(max(0, i - 1), min(num_rows, i + 2)):
+            for y in range(max(0, j - 1), min(num_cols, j + 2)):
+                if not revealed[x][y]:
+                    # Recursively reveal neighboring squares
+                    reveal_square(x, y)
     else:
         # Draw a green square for a number
         pygame.draw.rect(grid_surface, GREEN, pygame.Rect(
@@ -150,12 +151,14 @@ while not game_over:
                         # Flag the square
                         flagged[i][j] = True
                 else:
-                    # Reveal the square and its neighbors
-                    reveal_square(i, j)
-
+                    # Check if the square is flagged
+                    if not flagged[i][j]:
+                        # Reveal the square and its neighbors
+                        reveal_square(i, j)
     # Blit the grid surface to the screen
-    screen.blit(grid_surface, (0, (height - grid_height) // 2))
-
+    screen.fill(BLACK)
+    screen.blit(grid_surface, ((width - grid_width) //
+                2, (height - grid_height) // 2))
     # Update the display
     pygame.display.update()
 
