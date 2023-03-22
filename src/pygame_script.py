@@ -131,7 +131,7 @@ while not game_over:
     for i in range(num_rows):
         for j in range(num_cols):
             if flagged[i][j]:
-                num_flagged + - 1
+                num_flagged -= 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
