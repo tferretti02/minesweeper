@@ -127,6 +127,11 @@ timer_text = timer_font.render("Time: " + str(timer), True, WHITE)
 revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
 game_over = False
 while not game_over:
+    num_flagged = number_mines
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if flagged[i][j]:
+                num_flagged + - 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
@@ -188,6 +193,21 @@ while not game_over:
 
     # Blit the timer text onto the game screen
     screen.blit(timer_text, (grid_padding, grid_padding))
+
+    # Set up the font for the flagged cell count
+    flag_font = pygame.font.Font(None, 24)
+
+    # Create a text surface for the flagged cell count
+    flag_text = flag_font.render("Flags: " + str(num_flagged), True, WHITE)
+
+    # Get the rect for the text surface
+    flag_rect = flag_text.get_rect()
+
+    # Set the position of the text surface
+    flag_rect.topright = (width - grid_padding, grid_padding)
+
+    # Blit the flagged cell count onto the screen
+    screen.blit(flag_text, flag_rect)
 
     # Update the display
     pygame.display.update()
