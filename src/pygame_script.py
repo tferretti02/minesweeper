@@ -81,6 +81,9 @@ grid_surface.fill(BLACK)
 
 # Create the flagged matrix
 flagged = [[False for j in range(num_cols)] for i in range(num_rows)]
+flag_image = pygame.image.load("./flag.jpg")
+flag_size = (square_size, square_size)
+flag_image = pygame.transform.scale(flag_image, flag_size)
 
 # Draw the gray squares
 for i in range(num_rows):
@@ -146,7 +149,7 @@ timer_text = timer_font.render("Time: " + str(timer), True, WHITE)
 # Run the game loop
 revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
 game_over = False
-while not (game_won or game_lost):
+while not (game_won or game_lost or game_over):
     num_flagged = number_mines
     for i in range(num_rows):
         for j in range(num_cols):
@@ -176,11 +179,10 @@ while not (game_won or game_lost):
                         pygame.draw.rect(grid_surface, GRAY, pygame.Rect(
                             x, y, square_size, square_size))
                     else:
-                        # Draw a red square for a flag
+                        # Draw a flag
                         x = j * (square_size + grid_padding) + grid_padding
                         y = i * (square_size + grid_padding) + grid_padding
-                        pygame.draw.rect(grid_surface, RED, pygame.Rect(
-                            x, y, square_size, square_size))
+                        grid_surface.blit(flag_image, (x, y))
                         # Flag the square
                         flagged[i][j] = True
                 else:
@@ -235,8 +237,10 @@ while not (game_won or game_lost):
 # Game over, show message
 if game_won:
     message = win_font.render("Congratulations, you won!", True, RED)
-else:
+elif game_lost:
     message = lose_font.render("Sorry, you lost.", True, RED)
+else:
+    pygame.quit()
 
 # Blit the message to the center of the screen
 message_rect = message.get_rect(center=(width // 2, height // 2))
@@ -246,7 +250,7 @@ screen.blit(message, message_rect)
 pygame.display.update()
 
 # Wait for a few seconds before quitting
-pygame.time.wait(5000)
+pygame.time.wait(3000)
 
 # Quit Pygame
 pygame.quit()
