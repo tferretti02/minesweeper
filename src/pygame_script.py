@@ -13,9 +13,21 @@ ORANGE = (255, 165, 0)
 RED = (255, 0, 0)
 
 
-# Set up the grid
-num_rows = 8
-num_cols = 10
+difficulty = 3
+
+if difficulty == 1:
+    num_rows = 8
+    num_cols = 10
+    number_mines = 10
+elif difficulty == 2:
+    num_rows = 14
+    num_cols = 18
+    number_mines = 40
+elif difficulty == 3:
+    num_rows = 20
+    num_cols = 24
+    number_mines = 99
+
 square_size = 30
 grid_padding = 5
 
@@ -31,7 +43,6 @@ grid_height = height - 40
 
 # Create the matrix
 matrix = [[0 for j in range(num_cols)] for i in range(num_rows)]
-number_mines = 10  # number of mines to place
 
 game_won = False
 game_lost = False
@@ -84,51 +95,6 @@ screen.blit(grid_surface, (0, (height - grid_height) // 2))
 
 # Update the display
 pygame.display.update()
-
-
-def new_game():
-    global game_won, game_lost, revealed, flagged
-
-    # Reset game state
-    game_won = False
-    game_lost = False
-    revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
-    flagged = [[False for j in range(num_cols)] for i in range(num_rows)]
-
-    # Reset grid surface
-    grid_surface.fill(BLACK)
-    for i in range(num_rows):
-        for j in range(num_cols):
-            x = j * (square_size + grid_padding) + grid_padding
-            y = i * (square_size + grid_padding) + grid_padding
-            pygame.draw.rect(grid_surface, GRAY, pygame.Rect(
-                x, y, square_size, square_size))
-
-    # Place mines randomly in the matrix
-    for i in range(number_mines):
-        row = random.randint(0, num_rows - 1)
-        col = random.randint(0, num_cols - 1)
-        while matrix[row][col] == -1:
-            # If a mine is already at this location, try again
-            row = random.randint(0, num_rows - 1)
-            col = random.randint(0, num_cols - 1)
-        matrix[row][col] = -1
-
-    # Check the neighbors of each element and update the matrix
-    for i in range(num_rows):
-        for j in range(num_cols):
-            if matrix[i][j] != -1:
-                # Count the number of neighboring mines
-                count = 0
-                for x in range(max(0, i - 1), min(num_rows, i + 2)):
-                    for y in range(max(0, j - 1), min(num_cols, j + 2)):
-                        if matrix[x][y] == -1:
-                            count += 1
-                matrix[i][j] = count
-
-    # Reset timer
-    global timer
-    timer = 0
 
 
 def reveal_square(i, j):
