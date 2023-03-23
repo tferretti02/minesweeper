@@ -33,6 +33,12 @@ grid_height = height - 40
 matrix = [[0 for j in range(num_cols)] for i in range(num_rows)]
 number_mines = 10  # number of mines to place
 
+game_won = False
+game_lost = False
+
+win_font = pygame.font.Font(None, 36)
+lose_font = pygame.font.Font(None, 36)
+
 # Place the mines randomly in the matrix
 for i in range(number_mines):
     row = random.randint(0, num_rows - 1)
@@ -80,7 +86,53 @@ screen.blit(grid_surface, (0, (height - grid_height) // 2))
 pygame.display.update()
 
 
+def new_game():
+    global game_won, game_lost, revealed, flagged
+
+    # Reset game state
+    game_won = False
+    game_lost = False
+    revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
+    flagged = [[False for j in range(num_cols)] for i in range(num_rows)]
+
+    # Reset grid surface
+    grid_surface.fill(BLACK)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            x = j * (square_size + grid_padding) + grid_padding
+            y = i * (square_size + grid_padding) + grid_padding
+            pygame.draw.rect(grid_surface, GRAY, pygame.Rect(
+                x, y, square_size, square_size))
+
+    # Place mines randomly in the matrix
+    for i in range(number_mines):
+        row = random.randint(0, num_rows - 1)
+        col = random.randint(0, num_cols - 1)
+        while matrix[row][col] == -1:
+            # If a mine is already at this location, try again
+            row = random.randint(0, num_rows - 1)
+            col = random.randint(0, num_cols - 1)
+        matrix[row][col] = -1
+
+    # Check the neighbors of each element and update the matrix
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if matrix[i][j] != -1:
+                # Count the number of neighboring mines
+                count = 0
+                for x in range(max(0, i - 1), min(num_rows, i + 2)):
+                    for y in range(max(0, j - 1), min(num_cols, j + 2)):
+                        if matrix[x][y] == -1:
+                            count += 1
+                matrix[i][j] = count
+
+    # Reset timer
+    global timer
+    timer = 0
+
+
 def reveal_square(i, j):
+    global game_won, game_lost
     # Reveal the square at (i, j)
     revealed[i][j] = True
     # Draw the appropriate square on the grid surface
@@ -91,8 +143,7 @@ def reveal_square(i, j):
         pygame.draw.rect(grid_surface, ORANGE, pygame.Rect(
             x, y, square_size, square_size))
         # Game over
-        global game_over
-        game_over = True
+        game_lost = True
     elif matrix[i][j] == 0:
         # Draw a white square for a zero
         pygame.draw.rect(grid_surface, WHITE, pygame.Rect(
@@ -112,6 +163,9 @@ def reveal_square(i, j):
         text_rect = text_surface.get_rect(
             center=(x + square_size / 2, y + square_size / 2))
         grid_surface.blit(text_surface, text_rect)
+    # Check if the game has been won
+    if all(all(revealed[i][j] or matrix[i][j] == -1 for j in range(num_cols)) for i in range(num_rows)):
+        game_won = True
 
 
 # Initialize the timer
@@ -126,7 +180,7 @@ timer_text = timer_font.render("Time: " + str(timer), True, WHITE)
 # Run the game loop
 revealed = [[False for j in range(num_cols)] for i in range(num_rows)]
 game_over = False
-while not game_over:
+while not (game_won or game_lost):
     num_flagged = number_mines
     for i in range(num_rows):
         for j in range(num_cols):
@@ -211,6 +265,22 @@ while not game_over:
 
     # Update the display
     pygame.display.update()
+
+# Game over, show message
+if game_won:
+    message = win_font.render("Congratulations, you won!", True, RED)
+else:
+    message = lose_font.render("Sorry, you lost.", True, RED)
+
+# Blit the message to the center of the screen
+message_rect = message.get_rect(center=(width // 2, height // 2))
+screen.blit(message, message_rect)
+
+# Update the display
+pygame.display.update()
+
+# Wait for a few seconds before quitting
+pygame.time.wait(5000)
 
 # Quit Pygame
 pygame.quit()
