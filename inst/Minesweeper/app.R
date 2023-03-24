@@ -5,7 +5,6 @@ source("mine_sweeper.R")
 ui <- fluidPage(
   titlePanel("Mine Sweeper"),
   tabsetPanel(
-    tabPanel("Native Shiny"),
     tabPanel("X11", sidebarLayout(
       sidebarPanel(
         tags$style(HTML("body {background-color: green;}")),
