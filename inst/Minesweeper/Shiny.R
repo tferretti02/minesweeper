@@ -18,9 +18,9 @@ ui <- fluidPage(
     )),
     tabPanel("Python",
              radioButtons("difficulty", "Difficulty:",
-                          c("Easy" = "easy",
-                            "Medium" = "medium",
-                            "Hard" = "hard")
+                          c("Easy" = 1,
+                            "Medium" = 2,
+                            "Hard" = 3)
              ),
              actionButton("startPython", "Start", class = "btn-danger btn-lg"))
   )
@@ -33,7 +33,9 @@ server <- function(input, output) {
   })
   observeEvent(input$startPython, {
     print("loading")
-    py_run_file("../../src/pygame_script.py")
+    source_python("../../src/pygame_script.py")
+    result <- run_game(difficulty=as.integer(input$difficulty))
+    result
   })
   output$mine <- renderUI(
     actionstart()
