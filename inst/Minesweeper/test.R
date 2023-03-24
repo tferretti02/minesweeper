@@ -41,7 +41,7 @@ mineland_grid <- genarate_minesweeper_grid(grid_rows, grid_cols, n_mine)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  
+
   # Add custom CSS style for buttons
   tags$head(tags$style(HTML("
         .btn {
@@ -50,17 +50,37 @@ ui <- fluidPage(
             font-size: 14px;
         }
     "))),
-  
+
   # Application title
   tags$h1("Minesweeper"),
-  
+
+  # Sidebar with a slider input for number of bins
+  uiOutput("mineland")
+)
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+  # Add custom CSS style for buttons
+  tags$head(tags$style(HTML("
+        .btn {
+            width: 50px;
+            height: 50px;
+            font-size: 14px;
+        }
+    "))),
+
+  # Application title
+  tags$h1("Minesweeper"),
+
   # Sidebar with a slider input for number of bins
   uiOutput("mineland")
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
-  
+# Define server logic required to draw a histogram
+server <- function(input, output, session) {
+
   output$mineland <- renderUI({
     do.call(
       tagList,
@@ -69,13 +89,29 @@ server <- function(input, output) {
         fluidRow(
           actionGroupButtons(
             inputIds = tmp$id,
-            labels = ifelse(tmp$mine == 1, "💣", as.character(tmp$mine_count))
+            labels = rep("", nrow(tmp))
           )
         )
       })
     )
   })
+
+  observe({
+    clicked <- reactiveValuesToList(input)
+
+    for (cell_id in names(clicked)) {
+      if (startsWith(cell_id, "id") && !is.null(clicked[[cell_id]]) && clicked[[cell_id]] > 0) {
+        cell_info <- mineland_grid %>% dplyr::filter(id == cell_id)
+        updateActionButton(session, cell_id, label = ifelse(cell_info$mine == 1, "💣", as.character(cell_info$mine_count)))
+      }
+    }
+  })
 }
+
+
+# Run the application
+shinyApp(ui = ui, server = server)
+
 
 # Run the application
 shinyApp(ui = ui, server = server)
