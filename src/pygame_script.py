@@ -35,7 +35,7 @@ grid_padding = 5
 width = num_cols * (square_size + grid_padding) + grid_padding
 height = num_rows * (square_size + grid_padding) + grid_padding + 40
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Color-changing Grid")
+pygame.display.set_caption("Minesweeper")
 
 # Calculate the size of the grid surface
 grid_width = width
@@ -234,23 +234,24 @@ while not (game_won or game_lost or game_over):
     # Update the display
     pygame.display.update()
 
-# Game over, show message
-if game_won:
-    message = win_font.render("Congratulations, you won!", True, RED)
-elif game_lost:
-    message = lose_font.render("Sorry, you lost.", True, RED)
-else:
+if game_over:
     pygame.quit()
+else:
+    # Game over, show message
+    if game_won:
+        message = win_font.render("Congratulations, you won!", True, RED)
+    elif game_lost:
+        message = lose_font.render("Sorry, you lost.", True, RED)
 
-# Blit the message to the center of the screen
-message_rect = message.get_rect(center=(width // 2, height // 2))
-screen.blit(message, message_rect)
+    # Blit the message to the center of the screen
+    message_rect = message.get_rect(center=(width // 2, height // 2))
+    screen.blit(message, message_rect)
 
-# Update the display
-pygame.display.update()
+    # Update the display
+    pygame.display.update()
 
-# Wait for a few seconds before quitting
-pygame.time.wait(3000)
+    # Wait for a few seconds before quitting
+    pygame.time.wait(3000)
 
-# Quit Pygame
-pygame.quit()
+    # Quit Pygame
+    pygame.quit()
