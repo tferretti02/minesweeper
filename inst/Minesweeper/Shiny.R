@@ -1,35 +1,44 @@
 library(shiny)
-source("mine_sweeper.R") 
-ui <- fluidPage( 
+library(reticulate)
+source("mine_sweeper.R")
+
+ui <- fluidPage(
   titlePanel("Mine Sweeper"),
-  sidebarLayout(
-    sidebarPanel(
-      tags$style(HTML("body {background-color: green;}")),
-      sliderInput("WidthInput", "Width", 5, 50, 10),  
-      sliderInput("LengthInput", "Length", 5, 50, 10), 
-      sliderInput("MinesInput", "Mines", 1, 100, 5), 
-      actionButton("start", "Start",class = "btn-danger btn-lg")
-      #      selectInput("restartOption", "Restart", c("SELECT CHOICE","YES","NO"))
-    ),
-    mainPanel(uiOutput("mine")) 
+  tabsetPanel(
+    tabPanel("Native Shiny"),
+    tabPanel("X11", sidebarLayout(
+      sidebarPanel(
+        tags$style(HTML("body {background-color: green;}")),
+        sliderInput("WidthInput", "Width", 5, 50, 10),
+        sliderInput("LengthInput", "Length", 5, 50, 10),
+        sliderInput("MinesInput", "Mines", 1, 100, 5),
+        actionButton("startX11", "Start",class = "btn-danger btn-lg")
+      ),
+      mainPanel(uiOutput("mine"))
+    )),
+    tabPanel("Python",
+             radioButtons("difficulty", "Difficulty:",
+                          c("Easy" = "easy",
+                            "Medium" = "medium",
+                            "Hard" = "hard")
+             ),
+             actionButton("startPython", "Start", class = "btn-danger btn-lg"))
   )
 )
 
+
 server <- function(input, output) {
-  actionstart <- eventReactive(input$start, { #trigger of starting button
+  actionstart <- eventReactive(input$startX11, { #trigger of starting button
     mine_sweeper(input$WidthInput, input$LengthInput, input$MinesInput)
-  }
-  )
-  #action.restart <- eventReactive(input$restartOption, {
-     #answer(input$restartOption)
-     #}
-   #)
+  })
+  observeEvent(input$startPython, {
+    print("loading")
+    py_run_file("../../src/pygame_script.py")
+  })
   output$mine <- renderUI(
-    #    if (input$restartOption == "SELECT CHOICE") {
     actionstart()
-    #    } else action.restart()
   )#start the game
-  
+
 }
 
 shinyApp(ui = ui, server = server)
